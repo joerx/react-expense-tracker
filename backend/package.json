@@ -5,7 +5,9 @@
   "main": "server.js",
   "scripts": {
     "start": "node server",
-    "dev-server": "nodemon watch server"
+    "dev-server": "nodemon watch server",
+    "dev-client": "npm start --prefix ../frontend",
+    "dev-stack": "concurrently \"npm run dev-server\" \"npm run dev-client\""
   },
   "repository": {
     "type": "git",

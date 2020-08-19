@@ -1,12 +1,11 @@
 const express = require("express");
-const morgan = require("morgan");
 const connectDB = require("./db");
+const morgan = require("morgan");
 const transactions = require("./routes/transactions");
-const { Mongoose } = require("mongoose");
 
 require("dotenv").config();
 
-const port = process.env.PORT || 9090;
+const port = process.env.PORT || 5000;
 
 const main = async () => {
   try {
@@ -14,6 +13,7 @@ const main = async () => {
 
     const app = express();
     app.use(express.json());
+    app.use(morgan("dev"));
     app.use("/api/v1/transactions", transactions);
 
     app.use((error, req, res, next) => {
