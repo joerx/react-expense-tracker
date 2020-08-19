@@ -17,7 +17,6 @@ const mapTransaction = (t) => {
 exports.getTransactions = async (req, res, next) => {
   try {
     const transactions = await Transaction.find();
-
     return res
       .status(200)
       .json({ transactions: transactions.map(mapTransaction) });
