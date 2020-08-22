@@ -8,8 +8,8 @@
 [x] Implement list expenses
 [x] Implement add expense
 [x] Implement delete expense
-[ ] Refactor code
-[ ] Deploy frontend
+[x] Refactor code
+[x] Integrate frontend
 
 ## Deploy
 
@@ -33,7 +33,7 @@ aws dynamodb create-table --cli-input-json file://dynamodb/create-table.json --e
 
 aws dynamodb list-tables  --endpoint-url http://localhost:8000
 
-sam local start-api --docker-network local-dev
+npm run dev-stack
 ```
 
 - In a new terminal window:

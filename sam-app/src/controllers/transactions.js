@@ -31,7 +31,7 @@ class ValidationError extends Error {
 }
 
 const mapTransaction = (item) => {
-  return { id: item.id.S, text: item.text.S, amount: item.amount.S };
+  return { id: item.id.S, text: item.text.S, amount: Number(item.amount.S) };
 };
 
 /**

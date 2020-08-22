@@ -1,16 +1,20 @@
 {
-    "name": "replaced-by-user-input",
-    "description": "replaced-by-user-input",
-    "version": "0.0.1",
-    "private": true,
-    "dependencies": {
-        "jslint": "^0.12.1",
-        "uuid": "^8.3.0"
-    },
-    "devDependencies": {
-        "jest": "^24.7.1"
-    },
-    "scripts": {
-        "test": "jest"
-    }
+  "name": "replaced-by-user-input",
+  "description": "replaced-by-user-input",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev-server": "sam local start-api --docker-network local-dev --port 5000",
+    "dev-frontend": "npm start --prefix ../frontend",
+    "dev-stack": "concurrently 'npm run dev-server' 'npm run dev-frontend'"
+  },
+  "dependencies": {
+    "jslint": "^0.12.1",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "jest": "^24.7.1",
+    "nodemon": "^2.0.4"
+  }
 }
