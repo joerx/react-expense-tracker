@@ -14,12 +14,17 @@
 ## Deploy
 
 ```sh
+# Find bucket to use for deployment
+aws s3 ls | grep aws-sam-cli-managed
+
+S3_BUCKET=<bucket_name>
+
 sam deploy \
   --template-file template.yml \
   --stack-name expense-tracker-sam \
   --region ap-southeast-1 \
   --capabilities CAPABILITY_IAM \
-  --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-1wvvyi6xwwa4x
+  --s3-bucket $S3_BUCKET
 ```
 
 ## Local DynamoDB
@@ -42,6 +47,14 @@ npm run dev-stack
 sam build 
 
 curl http://localhost:3000/transactions
+```
+
+## Deployment Via CloudFormation
+
+```sh
+aws cloudformation package --template template.yml --s3-bucket $S3_BUCKET --output-template template-export.yml
+
+aws cloudformation deploy --template-file template-export.yml --stack-name expense-tracker-sam --capabilities CAPABILITY_IAM
 ```
 
 ## Logs
