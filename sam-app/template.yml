@@ -20,9 +20,12 @@ Resources:
       Timeout: 100
       Description: Main lambda handler function
       Role: !GetAtt lambdaExecutionRole.Arn
+      AutoPublishAlias: live
       Environment:
         Variables:
           DYNAMODB_TABLE: !Ref expenseTrackerTable
+      DeploymentPreference:
+        Type: Linear10PercentEvery1Minute
       Events:
         GetExpenses:
           Type: Api

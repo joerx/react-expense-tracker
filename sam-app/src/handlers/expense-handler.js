@@ -8,6 +8,8 @@ class MethodNotAllowed extends Error {
   }
 }
 
+// Bump: 1
+
 /**
  * Main lambda proxy handler
  * @param {*} event Lambda event
