@@ -1,8 +1,9 @@
-import * as cdk from "@aws-cdk/core";
+import * as cfn from "@aws-cdk/aws-cloudformation";
+import * as codebuild from "@aws-cdk/aws-codebuild";
 import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
-import * as codebuild from "@aws-cdk/aws-codebuild";
 import * as s3 from "@aws-cdk/aws-s3";
+import * as cdk from "@aws-cdk/core";
 import { SecretValue } from "@aws-cdk/core";
 
 export interface PipelineStackProps extends cdk.StackProps {
@@ -25,7 +26,7 @@ export class PipelineStack extends cdk.Stack {
       artifactBucket,
     });
 
-    // ** Codebuild project **
+    /** Codebuild project **/
 
     const lambdaBuild = new codebuild.PipelineProject(this, "LambdaBuild", {
       buildSpec: codebuild.BuildSpec.fromSourceFilename("sam-app/buildspec.yml"),
@@ -37,10 +38,12 @@ export class PipelineStack extends cdk.Stack {
       },
     });
 
-    // ** Code pipeline **
+    /** Code pipeline **/
 
     const sourceOutput = new codepipeline.Artifact();
     const samBuildOutput = new codepipeline.Artifact("SamBuildOutput");
+
+    // Source stage
 
     pipeline.addStage({
       stageName: "Source",
@@ -56,6 +59,8 @@ export class PipelineStack extends cdk.Stack {
       ],
     });
 
+    // Build stage
+
     pipeline.addStage({
       stageName: "Build",
       actions: [
@@ -64,6 +69,22 @@ export class PipelineStack extends cdk.Stack {
           project: lambdaBuild,
           input: sourceOutput,
           outputs: [samBuildOutput],
+        }),
+      ],
+    });
+
+    // Deploy stage
+
+    pipeline.addStage({
+      stageName: "Deploy",
+      actions: [
+        new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+          actionName: "Lambda_CFN_Deploy",
+          templatePath: samBuildOutput.atPath("sam-app/template-export.yml"),
+          stackName: "ExpenseTrackerStack",
+          adminPermissions: true,
+          extraInputs: [samBuildOutput],
+          capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND, cfn.CloudFormationCapabilities.NAMED_IAM],
         }),
       ],
     });
