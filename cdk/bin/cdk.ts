@@ -11,7 +11,7 @@ const artifactBucketArn = "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1";
 const repo: GitHubRepoProps = {
   name: "react-expense-tracker",
   owner: "joerx",
-  branch: "frontend-deployment",
+  branch: "master",
   oauthToken: process.env.GITHUB_TOKEN || "", // TODO: SecretsManager
 };
 
