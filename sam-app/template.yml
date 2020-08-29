@@ -19,7 +19,7 @@ Resources:
         AllowMethods: "'POST, GET'"
         AllowHeaders: "'X-Forwarded-For'"
         AllowOrigin:
-          Ref: corsOriginParameter
+          Ref: corsOrigin
         MaxAge: "'600'"
         AllowCredentials: True
 
