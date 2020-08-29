@@ -22,9 +22,6 @@ export class BackendPipelineStack extends cdk.Stack {
     });
 
     // TODO: get this from SecretsManager
-    if (!props.repo.oauthToken) {
-      throw new Error("Missing GitHub oauthToken");
-    }
     const gitHubTokenSecret = SecretValue.plainText(props.repo.oauthToken);
 
     const pipeline = new codepipeline.Pipeline(this, "Pipeline", {

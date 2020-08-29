@@ -34,9 +34,6 @@ export class FrontendPipelineStack extends cdk.Stack {
     });
 
     // TODO: should be in SecretsManager
-    if (!props.repo.oauthToken) {
-      throw new Error("Missing GitHub oauthToken");
-    }
     const gitHubTokenSecret = cdk.SecretValue.plainText(props.repo.oauthToken);
 
     // Lambda function to invalidate CDN cache

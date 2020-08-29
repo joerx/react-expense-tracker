@@ -12,7 +12,7 @@ const repo: GitHubRepoProps = {
   name: "react-expense-tracker",
   owner: "joerx",
   branch: "frontend-deployment",
-  oauthToken: process.env.GITHUB_TOKEN,
+  oauthToken: process.env.GITHUB_TOKEN || "", // TODO: SecretsManager
 };
 
 const app = new cdk.App();
