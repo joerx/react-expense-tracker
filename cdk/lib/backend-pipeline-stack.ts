@@ -5,12 +5,12 @@ import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
 import * as s3 from "@aws-cdk/aws-s3";
 import * as cdk from "@aws-cdk/core";
 import { SecretValue } from "@aws-cdk/core";
+import { GitHubRepoProps } from "./shared";
 
 export interface BackendPipelineStackProps extends cdk.StackProps {
-  readonly githubToken: string;
   readonly artifactBucketArn: string;
   readonly frontendOriginUrl: string;
-  readonly sourceBranch: string;
+  readonly repo: GitHubRepoProps;
 }
 
 export class BackendPipelineStack extends cdk.Stack {
@@ -22,7 +22,7 @@ export class BackendPipelineStack extends cdk.Stack {
     });
 
     // TODO: get this from SecretsManager
-    const gitHubTokenSecret = SecretValue.plainText(props.githubToken);
+    const gitHubTokenSecret = SecretValue.plainText(props.repo.oauthToken);
 
     const pipeline = new codepipeline.Pipeline(this, "Pipeline", {
       artifactBucket,
@@ -53,10 +53,10 @@ export class BackendPipelineStack extends cdk.Stack {
         new codepipeline_actions.GitHubSourceAction({
           actionName: "GithubSource",
           output: sourceOutput,
-          owner: "joerx",
-          repo: "react-expense-tracker",
+          owner: props.repo.owner,
+          repo: props.repo.name,
           oauthToken: gitHubTokenSecret,
-          branch: props.sourceBranch,
+          branch: props.repo.branch,
         }),
       ],
     });

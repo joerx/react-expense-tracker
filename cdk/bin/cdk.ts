@@ -4,8 +4,20 @@ import * as cdk from "@aws-cdk/core";
 import { BackendPipelineStack } from "../lib/backend-pipeline-stack";
 import { FrontendPipelineStack } from "../lib/frontend-pipeline-stack";
 import { FrontendStack } from "../lib/frontend-stack";
+import { GitHubRepoProps } from "../lib/shared";
 
-const sourceBranch = "frontend-deployment";
+if (!process.env.GITHUB_TOKEN) {
+  throw new Error("GITHUB_TOKEN must be set");
+}
+
+const artifactBucketArn = "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1";
+
+const repo: GitHubRepoProps = {
+  name: "react-expense-tracker",
+  owner: "joerx",
+  branch: "frontend-deployment",
+  oauthToken: process.env.GITHUB_TOKEN,
+};
 
 const app = new cdk.App();
 
@@ -14,17 +26,14 @@ const frontend = new FrontendStack(app, "ExpenseTrackerFrontendStack", {
 });
 
 new BackendPipelineStack(app, "ExpenseTrackerBackendPipeline", {
-  githubToken: process.env.GITHUB_TOKEN || "",
-  artifactBucketArn: "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1",
   frontendOriginUrl: `https://${frontend.distribution.domainName}`,
-  sourceBranch,
+  artifactBucketArn,
+  repo,
 });
 
 new FrontendPipelineStack(app, "ExpenseTrackerFrontendPipeline", {
-  githubToken: process.env.GITHUB_TOKEN || "",
-  artifactBucketArn: "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1",
-  bucket: frontend.bucket,
   apiEndpoint: "https://yz46rtbmcf.execute-api.ap-southeast-1.amazonaws.com/v1", // Known only after initial deploy
-  sourceBranch,
-  frontendStackName: frontend.stackName,
+  artifactBucketArn,
+  frontend,
+  repo,
 });
