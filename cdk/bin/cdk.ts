@@ -24,6 +24,6 @@ new FrontendPipelineStack(app, "ExpenseTrackerFrontendPipeline", {
   githubToken: process.env.GITHUB_TOKEN || "",
   artifactBucketArn: "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1",
   bucket: frontend.bucket,
-  apiEndpoint: "https://yz46rtbmcf.execute-api.ap-southeast-1.amazonaws.com", // Known only after initial deploy
+  apiEndpoint: "https://yz46rtbmcf.execute-api.ap-southeast-1.amazonaws.com/v1", // Known only after initial deploy
   sourceBranch,
 });

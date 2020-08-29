@@ -9,10 +9,7 @@ const initialState = {
   loading: true,
 };
 
-const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "";
-const apiPrefix = process.env.REACT_APP_API_PREFIX || ""; // "/api/v1";
-
-const apiUrl = `${apiEndpoint}/${apiPrefix}`;
+const apiUrl = process.env.REACT_APP_API_ENDPOINT || "";
 
 export const GlobalContext = createContext(initialState);
 
