@@ -6,10 +6,6 @@ import { FrontendPipelineStack } from "../lib/frontend-pipeline-stack";
 import { FrontendStack } from "../lib/frontend-stack";
 import { GitHubRepoProps } from "../lib/shared";
 
-if (!process.env.GITHUB_TOKEN) {
-  throw new Error("GITHUB_TOKEN must be set");
-}
-
 const artifactBucketArn = "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1";
 
 const repo: GitHubRepoProps = {
