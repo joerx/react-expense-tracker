@@ -36,7 +36,7 @@ Resources:
         Options:
           Type: Api
           Properties:
-            Path: /
+            Path: /transactions
             Method: options
             RestApiId:
               Ref: apiGatewayApi

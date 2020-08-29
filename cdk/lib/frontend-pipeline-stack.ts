@@ -6,10 +6,11 @@ import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
 import * as s3 from "@aws-cdk/aws-s3";
 
 export interface FrontendPipelineStackProps extends cdk.StackProps {
-  bucket: s3.IBucket;
-  artifactBucketArn: string;
-  githubToken: string;
-  apiEndpoint: string;
+  readonly bucket: s3.IBucket;
+  readonly artifactBucketArn: string;
+  readonly githubToken: string;
+  readonly apiEndpoint: string;
+  readonly sourceBranch: string;
 }
 
 export class FrontendPipelineStack extends cdk.Stack {
@@ -62,6 +63,17 @@ export class FrontendPipelineStack extends cdk.Stack {
           project: reactBuild,
           input: sourceOutput,
           outputs: [reactBuildOutput],
+        }),
+      ],
+    });
+
+    pipeline.addStage({
+      stageName: "Deploy",
+      actions: [
+        new codepipeline_actions.S3DeployAction({
+          input: reactBuildOutput,
+          bucket: props.bucket,
+          actionName: "S3Deploy",
         }),
       ],
     });

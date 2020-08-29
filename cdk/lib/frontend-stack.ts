@@ -9,6 +9,7 @@ export interface FrontendStackProps extends cdk.StackProps {
 
 export class FrontendStack extends cdk.Stack {
   public readonly bucket: IBucket;
+  public readonly distribution: cloudfront.IDistribution;
 
   constructor(scope: cdk.Construct, id: string, props: FrontendStackProps = {}) {
     super(scope, id, props);
@@ -23,7 +24,7 @@ export class FrontendStack extends cdk.Stack {
     const oai = new cloudfront.OriginAccessIdentity(this, "OAI");
     this.bucket.grantRead(oai);
 
-    const dist = new cloudfront.CloudFrontWebDistribution(this, "Dist", {
+    this.distribution = new cloudfront.CloudFrontWebDistribution(this, "Dist", {
       viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
       originConfigs: [
         {
@@ -41,7 +42,7 @@ export class FrontendStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, "CdnDomainName", {
-      value: dist.domainName,
+      value: this.distribution.domainName,
     });
   }
 }

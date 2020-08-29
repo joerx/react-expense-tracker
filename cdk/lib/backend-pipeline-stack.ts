@@ -9,6 +9,8 @@ import { SecretValue } from "@aws-cdk/core";
 export interface BackendPipelineStackProps extends cdk.StackProps {
   readonly githubToken: string;
   readonly artifactBucketArn: string;
+  readonly frontendOriginUrl: string;
+  readonly sourceBranch: string;
 }
 
 export class BackendPipelineStack extends cdk.Stack {
@@ -54,7 +56,7 @@ export class BackendPipelineStack extends cdk.Stack {
           owner: "joerx",
           repo: "react-expense-tracker",
           oauthToken: gitHubTokenSecret,
-          branch: "master",
+          branch: props.sourceBranch,
         }),
       ],
     });
@@ -85,6 +87,9 @@ export class BackendPipelineStack extends cdk.Stack {
           adminPermissions: true,
           extraInputs: [samBuildOutput],
           capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND, cfn.CloudFormationCapabilities.NAMED_IAM],
+          parameterOverrides: {
+            corsOriginParam: props.frontendOriginUrl,
+          },
         }),
       ],
     });
