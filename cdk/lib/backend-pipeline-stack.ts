@@ -6,13 +6,13 @@ import * as s3 from "@aws-cdk/aws-s3";
 import * as cdk from "@aws-cdk/core";
 import { SecretValue } from "@aws-cdk/core";
 
-export interface PipelineStackProps extends cdk.StackProps {
+export interface BackendPipelineStackProps extends cdk.StackProps {
   readonly githubToken: string;
   readonly artifactBucketArn: string;
 }
 
-export class PipelineStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: PipelineStackProps) {
+export class BackendPipelineStack extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string, props: BackendPipelineStackProps) {
     super(scope, id, props);
 
     const artifactBucket = s3.Bucket.fromBucketAttributes(this, "ImportedBucket", {

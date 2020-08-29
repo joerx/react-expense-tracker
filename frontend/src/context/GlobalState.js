@@ -9,7 +9,10 @@ const initialState = {
   loading: true,
 };
 
+const apiEndpoint = process.env.REACT_APP_API_ENDPOINT || "";
 const apiPrefix = process.env.REACT_APP_API_PREFIX || ""; // "/api/v1";
+
+const apiUrl = `${apiEndpoint}/${apiPrefix}`;
 
 export const GlobalContext = createContext(initialState);
 
@@ -25,7 +28,7 @@ export const GlobalProvider = ({ children }) => {
 
   const getTransactions = async () => {
     try {
-      const res = await axios.get(`${apiPrefix}/transactions`);
+      const res = await axios.get(`${apiUrl}/transactions`);
       const payload = res.data.transactions;
       dispatch({ type: "GET_TRANSACTIONS", payload });
     } catch (error) {
@@ -35,7 +38,7 @@ export const GlobalProvider = ({ children }) => {
 
   const deleteTransaction = async (transaction) => {
     try {
-      await axios.delete(`${apiPrefix}/transactions/${transaction.id}`);
+      await axios.delete(`${apiUrl}/transactions/${transaction.id}`);
       dispatch({
         type: "DELETE_TRANSACTION",
         payload: transaction,
@@ -49,7 +52,7 @@ export const GlobalProvider = ({ children }) => {
     const config = { headers: { "Content-type": "application/json" } };
 
     try {
-      const res = await axios.post(`${apiPrefix}/transactions`, transaction, config);
+      const res = await axios.post(`${apiUrl}/transactions`, transaction, config);
       dispatch({
         type: "ADD_TRANSACTION",
         payload: res.data.transaction,
