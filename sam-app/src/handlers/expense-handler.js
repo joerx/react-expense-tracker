@@ -1,6 +1,6 @@
 const transactionsController = require("../controllers/transactions");
 
-const corsOrigin = process.env.CORS_ORIGIN || "localhost";
+const corsOrigin = process.env.CORS_ORIGIN || "http://localhost";
 
 class MethodNotAllowed extends Error {
   statusCode = 405;

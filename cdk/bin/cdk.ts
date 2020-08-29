@@ -16,7 +16,7 @@ const frontend = new FrontendStack(app, "ExpenseTrackerFrontendStack", {
 new BackendPipelineStack(app, "ExpenseTrackerBackendPipeline", {
   githubToken: process.env.GITHUB_TOKEN || "",
   artifactBucketArn: "arn:aws:s3:::codepipeline-ap-southeast-1-nohcaid1",
-  frontendOriginUrl: frontend.distribution.domainName,
+  frontendOriginUrl: `https://${frontend.distribution.domainName}`,
   sourceBranch,
 });
 
