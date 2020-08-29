@@ -5,11 +5,23 @@ Description: >-
 Transform:
   - AWS::Serverless-2016-10-31
 
+Parameters:
+  corsOrigin:
+    Type: String
+    Default: localhost
+
 Resources:
   apiGatewayApi:
     Type: AWS::Serverless::Api
     Properties:
       StageName: v1
+      Cors:
+        AllowMethods: "'POST, GET'"
+        AllowHeaders: "'X-Forwarded-For'"
+        AllowOrigin:
+          Ref: corsOriginParameter
+        MaxAge: "'600'"
+        AllowCredentials: True
 
   expenseHandlerFunction:
     Type: AWS::Serverless::Function
