@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - npm -g install aws-cdk@1.6.0
+      - cd cdk
+      - npm install
+  build:
+    commands:
+      - cdk synth ExpenseTrackerFrontendStack > ExpenseTrackerFrontendStack.yml
+artifacts:
+  type: zip
+  base-directory: cdk
+  files:
+    - ExpenseTrackerFrontendStack.yml

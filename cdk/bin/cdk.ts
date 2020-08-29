@@ -26,4 +26,5 @@ new FrontendPipelineStack(app, "ExpenseTrackerFrontendPipeline", {
   bucket: frontend.bucket,
   apiEndpoint: "https://yz46rtbmcf.execute-api.ap-southeast-1.amazonaws.com/v1", // Known only after initial deploy
   sourceBranch,
+  frontendStackName: frontend.stackName,
 });

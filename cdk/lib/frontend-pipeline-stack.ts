@@ -11,6 +11,7 @@ export interface FrontendPipelineStackProps extends cdk.StackProps {
   readonly githubToken: string;
   readonly apiEndpoint: string;
   readonly sourceBranch: string;
+  readonly frontendStackName: string;
 }
 
 export class FrontendPipelineStack extends cdk.Stack {
@@ -37,8 +38,16 @@ export class FrontendPipelineStack extends cdk.Stack {
       },
     });
 
+    const cdkBuild = new codebuild.PipelineProject(this, "CdkBuild", {
+      buildSpec: codebuild.BuildSpec.fromSourceFilename("cdk/buildspec-frontend.yml"),
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+      },
+    });
+
     const sourceOutput = new codepipeline.Artifact();
-    const reactBuildOutput = new codepipeline.Artifact();
+    const reactBuildOutput = new codepipeline.Artifact("ReactBuild");
+    const cdkBuildOutput = new codepipeline.Artifact("CdkBuild");
 
     pipeline.addStage({
       stageName: "Source",
@@ -49,8 +58,7 @@ export class FrontendPipelineStack extends cdk.Stack {
           owner: "joerx",
           repo: "react-expense-tracker",
           oauthToken: gitHubTokenSecret,
-          branch: "frontend-deployment",
-          // branch: "master",
+          branch: props.sourceBranch,
         }),
       ],
     });
@@ -58,6 +66,12 @@ export class FrontendPipelineStack extends cdk.Stack {
     pipeline.addStage({
       stageName: "Build",
       actions: [
+        new codepipeline_actions.CodeBuildAction({
+          actionName: "CdkBuild",
+          project: cdkBuild,
+          input: sourceOutput,
+          outputs: [cdkBuildOutput],
+        }),
         new codepipeline_actions.CodeBuildAction({
           actionName: "ReactBuild",
           project: reactBuild,
@@ -70,6 +84,14 @@ export class FrontendPipelineStack extends cdk.Stack {
     pipeline.addStage({
       stageName: "Deploy",
       actions: [
+        new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+          actionName: "CdkStackDeploy",
+          templatePath: cdkBuildOutput.atPath("ExpenseTrackerFrontendStack.yml"),
+          stackName: props.frontendStackName,
+          adminPermissions: true,
+          extraInputs: [cdkBuildOutput],
+          capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND, cfn.CloudFormationCapabilities.NAMED_IAM],
+        }),
         new codepipeline_actions.S3DeployAction({
           input: reactBuildOutput,
           bucket: props.bucket,
