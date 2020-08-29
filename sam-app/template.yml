@@ -6,7 +6,7 @@ Transform:
   - AWS::Serverless-2016-10-31
 
 Parameters:
-  corsOrigin:
+  corsOriginParam:
     Type: String
     Default: localhost
 
@@ -15,13 +15,6 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: v1
-      Cors:
-        AllowMethods: "'POST, GET'"
-        AllowHeaders: "'X-Forwarded-For'"
-        AllowOrigin:
-          Ref: corsOrigin
-        MaxAge: "'600'"
-        AllowCredentials: True
 
   expenseHandlerFunction:
     Type: AWS::Serverless::Function
@@ -36,9 +29,17 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE: !Ref expenseTrackerTable
+          CORS_ORIGIN: !Ref corsOriginParam
       DeploymentPreference:
-        Type: Linear10PercentEvery1Minute
+        Type: AllAtOnce
       Events:
+        Options:
+          Type: Api
+          Properties:
+            Path: /
+            Method: options
+            RestApiId:
+              Ref: apiGatewayApi
         GetExpenses:
           Type: Api
           Properties:

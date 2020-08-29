@@ -1,5 +1,7 @@
 const transactionsController = require("../controllers/transactions");
 
+const corsOrigin = process.env.CORS_ORIGIN || "localhost";
+
 class MethodNotAllowed extends Error {
   statusCode = 405;
 
@@ -8,7 +10,7 @@ class MethodNotAllowed extends Error {
   }
 }
 
-// Bump: 1
+const passThru = async (req, res) => {};
 
 /**
  * Main lambda proxy handler
@@ -19,7 +21,12 @@ exports.expenseHandler = async (event, context) => {
   try {
     const res = {
       statusCode: 200,
-      headers: { "Content-type": "application/json" },
+      headers: {
+        "Content-type": "application/json",
+        "Access-Control-Allow-Headers": "X-Forwarded-For,Content-Type",
+        "Access-Control-Allow-Origin": corsOrigin,
+        "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+      },
       body: {},
     };
 
@@ -43,6 +50,10 @@ exports.expenseHandler = async (event, context) => {
 
       case "DELETE":
         handler = transactionsController.delete;
+        break;
+
+      case "OPTIONS":
+        handler = passThru;
         break;
     }
 
