@@ -1,14 +1,12 @@
-import * as cdk from "@aws-cdk/core";
 import * as cfn from "@aws-cdk/aws-cloudformation";
 import * as codebuild from "@aws-cdk/aws-codebuild";
 import * as codepipeline from "@aws-cdk/aws-codepipeline";
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions";
 import * as s3 from "@aws-cdk/aws-s3";
-import { GitHubRepoProps } from "./shared";
+import * as cdk from "@aws-cdk/core";
+import { CacheBuster } from "./chache-buster/cache-buster";
 import { FrontendStack } from "./frontend-stack";
-import * as lambda from "@aws-cdk/aws-lambda";
-import * as path from "path";
-import * as iam from "@aws-cdk/aws-iam";
+import { GitHubRepoProps } from "./shared";
 
 export interface FrontendPipelineStackProps extends cdk.StackProps {
   readonly artifactBucketArn: string;
@@ -26,8 +24,6 @@ export class FrontendPipelineStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props: FrontendPipelineStackProps) {
     super(scope, id, props);
 
-    const accountId = cdk.Stack.of(this).account;
-
     // Global bucket for artifacts
     const artifactBucket = s3.Bucket.fromBucketAttributes(this, "ImportedBucket", {
       bucketArn: props.artifactBucketArn,
@@ -36,34 +32,8 @@ export class FrontendPipelineStack extends cdk.Stack {
     // TODO: should be in SecretsManager
     const gitHubTokenSecret = cdk.SecretValue.plainText(props.repo.oauthToken);
 
-    // Lambda function to invalidate CDN cache
-    const basicLambdaPolicy = iam.ManagedPolicy.fromManagedPolicyArn(
-      this,
-      "basicLambdaPolicy",
-      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-    );
-
-    const cacheBusterRole = new iam.Role(this, "CacheBusterExecRole", {
-      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
-    });
-
-    cacheBusterRole.addToPolicy(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        actions: ["cloudfront:CreateInvalidation"],
-        resources: [`arn:aws:cloudfront::${accountId}:distribution/${props.frontend.distribution.distributionId}`],
-      })
-    );
-    cacheBusterRole.addManagedPolicy(basicLambdaPolicy);
-
-    const cacheBuster = new lambda.Function(this, "CacheBuster", {
-      runtime: lambda.Runtime.NODEJS_12_X,
-      handler: "index.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "cache-buster")),
-      role: cacheBusterRole,
-      environment: {
-        CF_DISTRIBUTION_ID: props.frontend.distribution.distributionId,
-      },
+    const cacheBuster = new CacheBuster(this, "CacheBuster", {
+      distribution: props.frontend.distribution,
     });
 
     const pipeline = new codepipeline.Pipeline(this, "Pipeline", {
@@ -158,7 +128,7 @@ export class FrontendPipelineStack extends cdk.Stack {
       actions: [
         new codepipeline_actions.LambdaInvokeAction({
           actionName: "CacheBuster",
-          lambda: cacheBuster,
+          lambda: cacheBuster.lambda,
         }),
       ],
     });
