@@ -28,7 +28,7 @@ new BackendPipelineStack(app, "ExpenseTrackerBackendPipeline", {
 });
 
 new FrontendPipelineStack(app, "ExpenseTrackerFrontendPipeline", {
-  apiEndpoint: "https://yz46rtbmcf.execute-api.ap-southeast-1.amazonaws.com/v1", // Known only after initial deploy
+  apiEndpoint: "https://n6dayaio8k.execute-api.ap-southeast-1.amazonaws.com/v1", // Known only after initial deploy
   artifactBucketArn,
   frontend,
   repo,
