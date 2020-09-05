@@ -1,16 +1,5 @@
 # SAM Backend for Expense Tracker
 
-## TODO
-
-[x] Basic stack setup & deployment
-[x] Add API gateway integration (proxy mode)
-[x] Local development setup
-[x] Implement list expenses
-[x] Implement add expense
-[x] Implement delete expense
-[x] Refactor code
-[x] Integrate frontend
-
 ## Deploy
 
 ```sh
@@ -66,3 +55,29 @@ aws cloudformation deploy --template-file template-export.yml --stack-name expen
 ## Resources 
 
 - https://docs.aws.amazon.com/codedeploy/latest/userguide/tutorial-lambda-sam-deploy.html
+
+## API Usage
+
+Set URL:
+
+```bash
+API_URL=http://localhost:3000
+```
+
+Get transactions:
+
+```bash
+curl $API_URL/transactions
+```
+
+Create transaction:
+
+```bash
+curl -XPOST -H"Content-type: application/json" -d'{"text": "AWS bill", "amount": -5000}' $API_URL/transactions
+```
+
+Delete transaction:
+
+```bash
+curl -XDELETE $API_URL/transactions/63611bb3-93cb-421c-8e57-0bbc958eec68
+```
