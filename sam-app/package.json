@@ -9,6 +9,7 @@
     "dev-stack": "concurrently 'npm run dev-server' 'npm run dev-frontend'"
   },
   "dependencies": {
+    "aws-xray-sdk-core": "^3.1.0",
     "jslint": "^0.12.1",
     "uuid": "^8.3.0"
   },

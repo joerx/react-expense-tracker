@@ -15,6 +15,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: v1
+      TracingEnabled: True
 
   expenseHandlerFunction:
     Type: AWS::Serverless::Function
@@ -26,6 +27,7 @@ Resources:
       Description: Main lambda handler function
       Role: !GetAtt lambdaExecutionRole.Arn
       AutoPublishAlias: live
+      Tracing: Active
       Environment:
         Variables:
           DYNAMODB_TABLE: !Ref expenseTrackerTable
@@ -77,6 +79,7 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
       Policies:
         - PolicyName: logs
           PolicyDocument:
